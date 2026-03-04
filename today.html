@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="src/style.css" />
+  <title>Ежедневник — Сегодня</title>
+</head>
+<body>
+  <header class="app-header py-2 px-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-journal-check fs-4"></i>
+      <span class="fw-semibold">Ежедневник пользовательских задач</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge text-bg-light border" id="whoami"></span>
+      <a class="btn btn-sm btn-outline-light" href="task.html"><i class="bi bi-plus-circle me-1"></i>Новая задача</a>
+      <a class="btn btn-sm btn-outline-light" href="tasks.html"><i class="bi bi-list-check me-1"></i>Список задач</a>
+    </div>
+  </header>
+
+  <main class="container-fluid my-3">
+    <div class="row g-3">
+      <aside class="col-12 col-xl-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="text-uppercase text-muted mb-2">Навигация</h6>
+            <div class="list-group mb-3">
+              <a class="list-group-item list-group-item-action active" href="today.html"><i class="bi bi-calendar-day me-2"></i>Сегодня</a>
+              <a class="list-group-item list-group-item-action" href="tasks.html"><i class="bi bi-list-check me-2"></i>Задачи</a>
+              <button class="list-group-item list-group-item-action" id="btnNotes"><i class="bi bi-sticky me-2"></i>Быстрая заметка</button>
+              <button class="list-group-item list-group-item-action" id="btnSettings"><i class="bi bi-gear me-2"></i>Настройки (демо)</button>
+            </div>
+
+            <h6 class="text-uppercase text-muted mb-2">Быстрые действия</h6>
+            <div class="d-grid gap-2">
+              <a class="btn btn-primary" href="task.html"><i class="bi bi-plus-lg me-1"></i>Добавить задачу</a>
+              <a class="btn btn-outline-primary" href="task.html?kind=event"><i class="bi bi-alarm me-1"></i>Добавить событие</a>
+            </div>
+
+            <hr/>
+
+            <h6 class="text-uppercase text-muted mb-2">Поиск и фильтры</h6>
+
+            <div class="input-group mb-2">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input class="form-control" id="q" placeholder="Поиск (заголовок/описание)" />
+              <button class="btn btn-outline-secondary" id="btnResetQ" title="Сброс"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small mb-1">Период: с</label>
+                <input class="form-control" type="date" id="dFrom">
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1">по</label>
+                <input class="form-control" type="date" id="dTo">
+              </div>
+            </div>
+
+            <div class="row g-2 mt-1">
+              <div class="col-6">
+                <label class="form-label small mb-1">Категория</label>
+                <select class="form-select" id="fltCat"><option value="">Все</option></select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small mb-1">Статус</label>
+                <select class="form-select" id="fltStatus"><option value="">Все</option></select>
+              </div>
+            </div>
+
+            <div class="d-grid mt-3">
+              <button class="btn btn-outline-secondary" id="btnResetFilters">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Сбросить фильтры
+              </button>
+            </div>
+
+            <hr/>
+            <div class="kpi small">
+              <div class="d-flex justify-content-between"><span>Показано:</span><span id="kpiCount">0</span></div>
+              <div class="d-flex justify-content-between"><span>Выполнено:</span><span id="kpiDone">0</span></div>
+              <div class="d-flex justify-content-between"><span>Просрочено:</span><span id="kpiOverdue">0</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="col-12 col-xl-9">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+              <h5 class="mb-0">Сегодня</h5>
+              <div class="small text-muted" id="todayLabel"></div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Время</th>
+                    <th>Заголовок</th>
+                    <th>Категория</th>
+                    <th>Приоритет</th>
+                    <th>Статус</th>
+                    <th>Напоминание</th>
+                    <th class="text-end">Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl"></tbody>
+              </table>
+            </div>
+
+            <div class="small text-muted" id="hint">
+              Прототип: данные хранятся в <code>localStorage</code>. Экран соответствует ЛР3 (рис. 1) и использует справочники из ЛР1.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Quick note modal -->
+  <div class="modal fade" id="noteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Быстрая заметка</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control" id="noteText" rows="6" placeholder="Текст заметки..."></textarea>
+          <div class="form-text">Сохраняется локально (демо).</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button class="btn btn-primary" id="btnSaveNote"><i class="bi bi-check2 me-1"></i>Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Настройки (демо)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Пользователь (для демонстрации)</label>
+          <select class="form-select" id="userSelect"></select>
+          <div class="form-text">Меняет отображаемый логин в шапке. Авторизация в ЛР4 не требуется.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button class="btn btn-primary" id="btnApplyUser"><i class="bi bi-check2 me-1"></i>Применить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="src/common.js"></script>
+  <script src="src/today.js"></script>
+</body>
+</html>
