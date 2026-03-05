@@ -51,23 +51,6 @@
     noteModal.hide();
   });
 
-  // settings (demo user switch)
-  const userSelect = document.getElementById('userSelect');
-  DIARY.APP.users.forEach(u=>{
-    const opt = document.createElement('option');
-    opt.value = u.login;
-    opt.textContent = `${u.login} (${u.role})`;
-    userSelect.appendChild(opt);
-  });
-  userSelect.value = whoami.login;
-
-  document.getElementById('btnSettings').addEventListener('click', ()=> settingsModal.show());
-  document.getElementById('btnApplyUser').addEventListener('click', ()=>{
-    const u = DIARY.APP.users.find(x=>x.login===userSelect.value) || {login:'user1', role:'User'};
-    DIARY.setWhoami({login: u.login, role: u.role});
-    location.reload();
-  });
-
   const inRange = (d, a, b)=> (!a || d>=a) && (!b || d<=b);
 
   const render = ()=>{
